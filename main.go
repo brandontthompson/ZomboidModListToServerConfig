@@ -313,4 +313,7 @@ func main() {
 
 	fmt.Println(createConfigOutput(&workshopIds, &modIds, mapId))
 
+	fmt.Println("Press enter to exit")
+	reader.ReadString('\n')
+
 }
