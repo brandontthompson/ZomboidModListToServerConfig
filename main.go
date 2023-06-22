@@ -1,18 +1,16 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/gosuri/uiprogress"
-	"golang.org/x/net/html"
 	"io"
 	"net/http"
-	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gosuri/uiprogress"
+	"golang.org/x/net/html"
 )
 
 func getAttribute(node *html.Node, tag string) (string, bool) {
@@ -205,14 +203,14 @@ func createConfigOutput(workshop *[]string, mod *[]string, m string) string {
 
 func main() {
 	fmt.Println("Enter the URL of the workshop collection you want to parse:")
-	reader := bufio.NewReader(os.Stdin)
-	inp, err := reader.ReadString('\n')
+	//reader := bufio.NewReader(os.Stdin)
+	//inp, err := reader.ReadString('\n')
+	var inp string
+	_, err := fmt.Scanln(&inp)
 	if err != nil {
 		fmt.Println("An error occurred while reading input. Please try again", err)
 		return
 	}
-
-	inp = strings.TrimSuffix(inp, "\n")
 	url := inp
 	body := loadUrlContent(url)
 
@@ -278,18 +276,13 @@ func main() {
 			fmt.Println(j, ": ", res.options[j])
 		}
 
-		input, err := reader.ReadString('\n')
+		var input int
+		_, err := fmt.Scanln(&input)
 		if err != nil {
 			fmt.Println("An error occurred while reading input. Please try again", err)
 			return
 		}
-
-		input = strings.TrimSuffix(input, "\n")
-		in, err := strconv.Atoi(input)
-		if err != nil {
-			panic(err)
-		}
-		modIds[res.reservedIndex] = res.options[in]
+		modIds[res.reservedIndex] = res.options[input]
 	}
 
 	if len(mapIds) > 0 {
@@ -298,22 +291,17 @@ func main() {
 			fmt.Println(i, ": ", mapIds[i])
 
 		}
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("An error occurred while reading input. Please try again", err)
-			return
-		}
-		input = strings.TrimSuffix(input, "\n")
-		in, err := strconv.Atoi(input)
+		var input int
+		_, err := fmt.Scanln(&input)
 		if err != nil {
 			panic(err)
 		}
-		mapId = mapIds[in]
+		mapId = mapIds[input]
 	}
 
 	fmt.Println(createConfigOutput(&workshopIds, &modIds, mapId))
 
 	fmt.Println("Press enter to exit")
-	reader.ReadString('\n')
+	fmt.Scanln()
 
 }
