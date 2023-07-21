@@ -147,13 +147,12 @@ func stripParse(str string, variants []string) []string {
 	return parseValues(a, findVariant(alower, variants))
 }
 
-func processModIdentifier(buff string) (string, []string, []string) {
+func processModIdentifier(buff string) ([]string, []string) {
 
-	wvariants := produceVariants("Workshop ID:")
 	modvariants := produceVariants("Mod ID:")
 	mapvariants := produceVariants("Map Folder:")
 
-	return stripParse(buff, wvariants)[0], stripParse(buff, modvariants), stripParse(buff, mapvariants)
+	return stripParse(buff, modvariants), stripParse(buff, mapvariants)
 }
 
 func parseValues(str, prefix string) []string {
@@ -240,8 +239,9 @@ func main() {
 		title := getContent(getFirstElementByAttr(&data[i], "workshopItemTitle", "class"))
 		steps[1], steps[2] = "fetching: "+title, "parsing: "+title
 		contentId, _ := getAttribute(&data[i], "id")
+		workshopId := strings.Split(contentId, "_")[1]
 
-		u := "https://steamcommunity.com/sharedfiles/filedetails/?id=" + strings.Split(contentId, "_")[1]
+		u := "https://steamcommunity.com/sharedfiles/filedetails/?id=" + workshopId
 
 		bar.Incr()
 		b := loadUrlContent(u)
@@ -251,7 +251,7 @@ func main() {
 
 		bar.Incr()
 		desc := getFirstElementByAttr(n, "highlightContent", "id")
-		workshopId, modId, mpId := processModIdentifier(renderNode(desc))
+		modId, mpId := processModIdentifier(renderNode(desc))
 		workshopIds = append(workshopIds, workshopId)
 		if len(mpId) > 0 {
 			mapIds = append(mapIds[:], mpId[:]...)
@@ -260,7 +260,6 @@ func main() {
 			modIds = append(modIds, reservedOrPlaceholder(&reservedIndexes, modId, len(modIds), "mod", workshopId, title))
 		}
 		time.Sleep(300 * time.Millisecond)
-		//fmt.Println(processModIdentifier(renderNode(desc)))
 	}
 	mapIds = append(mapIds, "")
 
